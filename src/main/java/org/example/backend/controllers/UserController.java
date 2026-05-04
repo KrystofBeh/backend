@@ -16,11 +16,13 @@ public class UserController {
 
     @PostMapping("register")
     public User register(@RequestBody User user) {
+        String username = user.getFirstName() + user.getLastName() ;
+        user.setUsername(username);
         return repository.save(user);
     }
 
-    @GetMapping("/returnUsers")
-    public List<User> getUsers() {
-        return repository.findAll();
+    @GetMapping("/loginCheck")
+    public String getUsers(@RequestBody User user) {
+        User u = repository.findByUsername(user.getUsername());
     }
 }

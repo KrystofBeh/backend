@@ -12,7 +12,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String firstName,  lastName, password;
+    private String firstName,  lastName, password, username;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Account> accounts = new ArrayList<>();
@@ -36,6 +36,14 @@ public class User {
         return id;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -51,5 +59,14 @@ public class User {
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     //endregion
 }
