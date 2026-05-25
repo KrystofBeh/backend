@@ -17,7 +17,9 @@ public class User {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Account> accounts = new ArrayList<>();
 
-    public User() {}
+    public User() {
+        username = firstName + lastName;
+    }
 
     //region gettrs and settrs
     public List<Account> getAccounts() {

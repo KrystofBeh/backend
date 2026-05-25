@@ -1,6 +1,8 @@
 package org.example.backend.controllers;
 
+import org.example.backend.Classes.Account;
 import org.example.backend.Classes.User;
+import org.example.backend.Classes.AccountRequest;
 import org.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +17,46 @@ public class UserController {
     private UserRepository repository;
 
     @PostMapping("register")
-    public User register(@RequestBody User user) {
+    public String register(@RequestBody User user) {
         String username = user.getFirstName() + user.getLastName() ;
         user.setUsername(username);
-        return repository.save(user);
+        User saved = repository.save(user);
+        return "Register successful:" + saved.getId();
     }
 
-    @GetMapping("/loginCheck")
-    public String getUsers(@RequestBody User user) {
+    @PostMapping("/loginCheck")
+        public String loginCheck(@RequestBody User user) {
+
+        System.out.println(user.getUsername() + " " + user.getPassword());
+        user.setUsername(user.getFirstName()+user.getLastName());
+
         User u = repository.findByUsername(user.getUsername());
+
+        if (u != null && u.getPassword().equals(user.getPassword())) {
+            return "Login successful:" + u.getId();
+        } else {
+            return "Invalid username or password";
+        }
     }
+
+    @PostMapping("/createAccount")
+    public String createAccount(@RequestBody AccountRequest request) {
+        Account account = new Account();
+        account.setName(request.getName());
+        account.setBalance(request.getBalance());
+        
+        User user = repository.findById(request.getUserId()).orElse(null);
+        if (user == null) {
+            return "User not found";
+        }
+        account.setOwner(user);
+
+        user.getAccounts().add(account);
+        repository.save(user);
+
+        return "Acc creation successful";
+        
+    }
+
+
 }
