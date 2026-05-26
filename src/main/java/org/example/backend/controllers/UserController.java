@@ -58,5 +58,22 @@ public class UserController {
         
     }
 
+    @GetMapping("/getAccounts/{userId}")
+    public List<Account> getAccounts(@PathVariable long userId) {
+        User u = repository.findById(userId).orElse(null);
+        if (u == null) {
+            return List.of();
+        }
+        return u.getAccounts();
+    }
 
+    @GetMapping("/acc/{userId}/{accId}")
+    public Account getAccount(@PathVariable long userId, @PathVariable long accId) {
+        User u = repository.findById(userId).orElse(null);
+        if (u == null) {return null;}
+        Account a = u.getAccounts().stream().filter(a1 -> a1.getId() == accId).findFirst().orElse(null);
+        if (a == null) {return null;}
+        return a;
+
+    }
 }
