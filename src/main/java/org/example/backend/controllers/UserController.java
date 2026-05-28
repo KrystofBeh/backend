@@ -44,6 +44,7 @@ public class UserController {
         Account account = new Account();
         account.setName(request.getName());
         account.setBalance(request.getBalance());
+        System.out.println(request.getBalance());
         
         User user = repository.findById(request.getUserId()).orElse(null);
         if (user == null) {
