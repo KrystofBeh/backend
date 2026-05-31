@@ -1,9 +1,9 @@
 package org.example.backend.Classes;
 
 public class TransferRequest {
-    private Long userId; // případně Long/int podle toho, jaký typ používáš
+    private Long userId;
     private Long sourceAccountId;
-    private Long targetAccountId;
+    private String targetAccountName;
     private double amount;
 
     // Gettery a Settery
@@ -13,8 +13,8 @@ public class TransferRequest {
     public Long getSourceAccountId() { return sourceAccountId; }
     public void setSourceAccountId(Long sourceAccountId) { this.sourceAccountId = sourceAccountId; }
 
-    public Long getTargetAccountId() { return targetAccountId; }
-    public void setTargetAccountId(Long targetAccountId) { this.targetAccountId = targetAccountId; }
+    public String getTargetAccountName() { return targetAccountName; }
+    public void setTargetAccountId(String targetAccountId) { this.targetAccountName = targetAccountName; }
 
     public double getAmount() { return amount; }
     public void setAmount(double amount) { this.amount = amount; }

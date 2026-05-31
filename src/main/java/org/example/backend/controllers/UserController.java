@@ -86,30 +86,26 @@ public class UserController {
         User u = repository.findById(request.getUserId()).orElse(null);
         if (u == null) return "User neexistuje";
 
-        // Zdrojový účet (porovnáváme přes .equals())
         Account sourceAcc = u.getAccounts().stream()
                 .filter(a1 -> a1.getId() == (request.getSourceAccountId()))
                 .findFirst().orElse(null);
 
-        // Najdeme cílového uživatele podle ID cílového účtu
         User targetUser = repository.findAll().stream()
-                .filter(user -> user.getAccounts().stream().anyMatch(a -> a.getId() == (request.getTargetAccountId())))
+                .filter(user -> user.getAccounts().stream().anyMatch(a -> a.getName().equalsIgnoreCase(request.getTargetAccountName())))
                 .findFirst().orElse(null);
 
         if (sourceAcc == null || targetUser == null) {
             return "Ucet nebo prijemce nenalezen";
         }
 
-        // Vytáhneme cílový účet z nalezeného uživatele
         Account targetAcc = targetUser.getAccounts().stream()
-                .filter(a -> a.getId() == (request.getTargetAccountId()))
+                .filter(a -> a.getName().equalsIgnoreCase(request.getTargetAccountName()))
                 .findFirst().get();
 
         // Provedeme změnu zůstatků
         sourceAcc.setBalance(sourceAcc.getBalance() - request.getAmount());
         targetAcc.setBalance(targetAcc.getBalance() + request.getAmount());
 
-        // Uložíme oba uživatele, čímž se v DB updatují i jejich účty
         repository.save(u);
         repository.save(targetUser);
 
