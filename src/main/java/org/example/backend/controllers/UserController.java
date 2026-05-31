@@ -1,12 +1,14 @@
 package org.example.backend.controllers;
 
 import org.example.backend.Classes.Account;
+import org.example.backend.Classes.TransferRequest;
 import org.example.backend.Classes.User;
 import org.example.backend.Classes.AccountRequest;
 import org.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -76,5 +78,41 @@ public class UserController {
         if (a == null) {return null;}
         return a;
 
+    }
+
+    @PostMapping("/transfer")
+    public String transferMoney(@RequestBody TransferRequest request) {
+
+        User u = repository.findById(request.getUserId()).orElse(null);
+        if (u == null) return "User neexistuje";
+
+        // Zdrojový účet (porovnáváme přes .equals())
+        Account sourceAcc = u.getAccounts().stream()
+                .filter(a1 -> a1.getId() == (request.getSourceAccountId()))
+                .findFirst().orElse(null);
+
+        // Najdeme cílového uživatele podle ID cílového účtu
+        User targetUser = repository.findAll().stream()
+                .filter(user -> user.getAccounts().stream().anyMatch(a -> a.getId() == (request.getTargetAccountId())))
+                .findFirst().orElse(null);
+
+        if (sourceAcc == null || targetUser == null) {
+            return "Ucet nebo prijemce nenalezen";
+        }
+
+        // Vytáhneme cílový účet z nalezeného uživatele
+        Account targetAcc = targetUser.getAccounts().stream()
+                .filter(a -> a.getId() == (request.getTargetAccountId()))
+                .findFirst().get();
+
+        // Provedeme změnu zůstatků
+        sourceAcc.setBalance(sourceAcc.getBalance() - request.getAmount());
+        targetAcc.setBalance(targetAcc.getBalance() + request.getAmount());
+
+        // Uložíme oba uživatele, čímž se v DB updatují i jejich účty
+        repository.save(u);
+        repository.save(targetUser);
+
+        return "Prevod uspesny";
     }
 }
